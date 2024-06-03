@@ -1,8 +1,8 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
-// import Cards from "../components/Cards";
-// import TransactionForm from "../components/TransactionForm";
+import Cards from "../components/Cards";
+import TransactionForm from "../components/TransactionForm";
 
 import { MdLogout } from "react-icons/md";
 
@@ -39,7 +39,7 @@ const HomePage = () => {
 						Spend wisely, track wisely
 					</p>
 					<img
-						src={"https://tecdn.b-cdn.net/img/new/avatars/2.webp"}
+						src={"https://img.freepik.com/free-psd/3d-illustration-human-avatar-profile_23-2150671142.jpg?w=740&t=st=1717374257~exp=1717374857~hmac=35c91cf86c0f20464b3eb626daa2e5ddbe4fa055eb419df7624b9274e7d6af20"}
 						className='w-11 h-11 rounded-full border cursor-pointer'
 						alt='Avatar'
 					/>
