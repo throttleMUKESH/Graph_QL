@@ -9,7 +9,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <GridBackground>
         <App />
-        // changes
       </GridBackground>
     </BrowserRouter>
   </React.StrictMode>
