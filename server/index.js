@@ -7,7 +7,7 @@ import ConnectMongoDBSession from "connect-mongodb-session";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import {  buildContext } from "graphql-passport";
+import { buildContext } from "graphql-passport";
 import passport from "passport";
 import session from "express-session";
 
@@ -16,13 +16,8 @@ import mergedTypeDefs from "./typeDefs/index.js";
 import { connectDB } from "./db/connectDB.js";
 import { configurePassport } from "./passport/passport.config.js";
 
-
-
-
 dotenv.config();
 configurePassport();
-
-
 
 const app = express();
 
@@ -33,31 +28,35 @@ const MongoDBStore = ConnectMongoDBSession(session);
 
 const store = new MongoDBStore({
   uri: process.env.MONGO_URI,
-  collection: "sessions"
-})
+  collection: "sessions",
+});
 
 store.on("error", (err) => console.log(err));
 
 app.use(
   session({
-    secret: process.env.SESSSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    httpOnly: true
-   },
-  store: store
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+    },
+    store: store,
   })
-)
+);
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 // Create a new Apollo Server instance
 const server = new ApolloServer({
   typeDefs: mergedTypeDefs,
   resolvers: mergedResolvers,
+  context: async ({ req, res }) => {
+    const token = req.headers.authorization || "";
+    const user = await getUser(token);
+    return { req, res, user, login, authenticate, logout, getUser }; // Ensure all needed functions are included
+  },
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
@@ -71,10 +70,10 @@ app.get("/", (req, res) => {
 });
 
 app.use(
-  "/",
+  "/graphql",
   cors({
     origin: "http://localhost:3000",
-    credentials: true
+    credentials: true,
   }), // Enable CORS
   express.json(), // Parse JSON bodies
   expressMiddleware(server, {
