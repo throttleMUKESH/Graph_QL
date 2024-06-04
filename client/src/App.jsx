@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Routes, Route } from "react-router-dom";
+
+import { Routes, Route, Navigate } from "react-router-dom";
+import { GET_AUTHENTICATED_USER } from "./GraphQL/queries/user.query";
 
 import "./App.css";
 
@@ -12,22 +13,27 @@ import NotFoundePage from "./pages/NotFoundePage";
 
 // components
 import Header from "./components/Header";
+import { useQuery } from "@apollo/client";
 
 
 function App() {
-  const [count, setCount] = useState(0);
+const authUser = true;
+const {loading, data, error} = useQuery(GET_AUTHENTICATED_USER);
+console.log("Authenticated User:", data)
+console.log("laoding:", loading);
+console.log("error:", error);
 
   return (
     <>
-      {/* <Header> */}
+       {data?.authUser && <Header/>}
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/" element={data.authUser ? <HomePage /> : <Navigate to="/login"/>} />
+          <Route path="/login" element={!data.authUser ? <LoginPage/> : <Navigate to="/"/>} />
+          <Route path="/signup" element={!data.authUser ? <SignUpPage />: <Navigate to="/"/>} />
           <Route path="/transaction/:id" element={<TransactionPage />} />
           <Route path="*" element={<NotFoundePage />} />
         </Routes>
-      {/* </Header> */}
+      
     </>
   );
 }
